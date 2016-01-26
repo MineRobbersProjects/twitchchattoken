@@ -1,8 +1,45 @@
 <html>
 <head>
-<title>Coming Soon</title>
+<title>TwitchChatToken</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+<script src="https://ttv-api.s3.amazonaws.com/twitch.min.js"></script>
+<script>
+  Twitch.init({clientId: '9npwkv43oe0pn8b7ainiqiq08es52j1'}, function(error, status) {
+  if (error) {
+    // error encountered while loading
+    console.log(error);
+  }
+  // the sdk is now loaded
+  if (status.authenticated) {
+    $('.twitch-connect').hide();
+  } else {
+    $('.twitch-connect').show();
+    $('#tokenbox').hide();
+  }
+  });
+  $('.twitch-connect').click(function() {
+  Twitch.login({
+    scope: ['chat_login', 'user_read']
+  });
+  });
+  $("#greeting h2").load(Twitch.api({method: 'user'}, function (error, user) {
+    if (error) { console.log(error); } else {
+    document.getElementById("greeting").textContent = "Welcome " + user.display_name + "!";
+    $("#chat-token input").val(Twitch.getToken());
+    $('#tokenbox').show();
+    }
+  }));
+  $('#logout').click(function () {Twitch.logout(); window.location="http://minerobbersprojects.github.io/twitchchattoken/"});
+</script>
 </head>
 <body>
-<p>Coming soon!</p>
+<h1>MineRobber's TwitchChatToken Generator</h1>
+<h2 id="greeting">Login!</h2>
+<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png" class="twitch-connect" href="#" />
+<div id="tokenbox">
+  <p>Your chat token is:</p>
+  <input readonly="readonly" id="chat-token" />
+  <button id="logout">Invalidate key!</button>
+</div>
 </body>
 </html>
